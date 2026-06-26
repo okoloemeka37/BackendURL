@@ -25,7 +25,7 @@ router.post("/postClip",(req,res)=>{
         const url=new URL(data.clip);
         const original=url.href
         const hostName=url.hostname;
-        const shortURL=`http://localhost:3000/${slug}`;
+        const shortURL=`https://frontendurl-cwfx.onrender.com/${slug}`;
 
       const result=  db.query(`INSERT INTO links(userId,short,original,clicks) VALUES(?,?,?,?)`,[userId,slug,original,0])
         console.log(result)
