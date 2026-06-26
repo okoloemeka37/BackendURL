@@ -9,7 +9,7 @@ import UrlRouter from './routes/UrlRouter.js'
 
 app.use(express.json());
 app.use(cors({
-    origin:"http://localhost:3000",
+    origin:"https://frontendurl-cwfx.onrender.com/",
     credentials:false
 }))
 
