@@ -42,10 +42,14 @@ router.get("/getClip",(req,res)=>{
     console.log(slug)
     const sql=`SELECT * FROM links  WHERE short=?`;
     db.query(sql,[slug],(err,result)=>{
-         console.log(result)
-    const url=result[0]['original'];
+         if (result.length ===0) {
+            return res.status(402).json({error:"No Link Was Found For This Clip"})
+         } else {
+             const url=result[0]['original'];
 
-    return res.status(200).json({url})
+             return res.status(200).json({url})
+         }
+   
     });
    
 })
