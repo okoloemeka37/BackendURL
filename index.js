@@ -8,10 +8,23 @@ const port = 5000
 import UrlRouter from './routes/UrlRouter.js'
 
 app.use(express.json());
+
+const allowedOrigins = [
+  "https://zyler.com.ng",
+  "https://www.zyler.com.ng",
+  "https://frontendurl-cwfx.onrender.com"
+];
+
 app.use(cors({
-    origin:"https://frontendurl-cwfx.onrender.com/",
-    credentials:false
-}))
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: false
+}));
 
 
 app.use("/api/user",UrlRouter)
