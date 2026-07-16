@@ -26,7 +26,7 @@ router.post("/postClip",(req,res)=>{
         const original=url.href
         const hostName=url.hostname;
         const shortURL=`https://zyler.com.ng/${slug}`;
-
+//const shortURL=`http://localhost:3000/${slug}`
       const result=  db.query(`INSERT INTO links(userId,short,original,clicks) VALUES(?,?,?,?)`,[userId,slug,original,0])
         console.log(result)
          return res.status(200).json({shortURL})
