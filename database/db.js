@@ -1,24 +1,22 @@
-import mysql from 'mysql2'
- const db = mysql.createConnection({
-  host: "bqrljmw02erm9bzpdevn-mysql.services.clever-cloud.com",
-  user: "u0cpcsrsq3pvfgdj",
-  password: "Fow8u3OMWzXLc0L8X1ba",
-  database: "bqrljmw02erm9bzpdevn",
-}); 
-/* const db = mysql.createConnection({
+import mysql from "mysql2/promise";
+
+const db = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
   database: "url_shortener",
-}); */
-
-db.connect((err) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-
-  console.log("Connected to MySQL");
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
-export default db
+// Optional: Test the pool connection on startup
+try {
+  const connection = await db.getConnection();
+  console.log("Successfully connected to the database.");
+  connection.release();
+} catch (error) {
+  console.error("Failed to connect to the database:", error.message);
+}
+
+export default db;
