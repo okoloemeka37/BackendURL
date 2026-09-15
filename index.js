@@ -10,9 +10,14 @@ import DashboardRouter from './routes/DashboardRouter.js';
 app.use(express.json());
 app.set("trust proxy", true);
 
-app.use(cors({
+/* app.use(cors({
     origin:"http://localhost:3000",
     credentials:true
+})) */
+
+app.use(cors({
+  origin:"https://frontend-url-blush.vercel.app/",
+  credentials:true
 }))
  
 app.use(cookieParser())
