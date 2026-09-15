@@ -43,3 +43,5 @@ app.use("/api/user",UrlRouter)
 app.use("/api/Auth",userRouter)
 app.use("/api/Admin",DashboardRouter)
 app.listen(port, () => console.log(`App listening on port ${port}!`))
+
+export default app;
