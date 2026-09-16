@@ -50,7 +50,7 @@ const geoDb = await maxmind.open(dbPath);
 
 router.get("/getClip",async(req,res)=>{
      const {slug} =req.query;
-    const ip=req.ip//'24.114.254.229';
+
     const parser = new UAParser(req.headers["user-agent"]);
 
     const Agentresult = parser.getResult();
@@ -60,42 +60,53 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
+// Extract client IP address safely behind Vercel's proxy
+  const rawIp = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '';
+  const ip = rawIp.replace(/^::ffff:/, ''); // Clean IPv6-mapped IPv4 addresses
 
-       // Search IP in GeoLite database
-        const result = geoDb.get(ip);
+  // 1. Get raw location values from Vercel headers (decode URI components for multi-word cities)
+  const country = req.headers['x-vercel-ip-country']
+    ? decodeURIComponent(req.headers['x-vercel-ip-country'])
+    : null;
 
-        // Get country
-        const country =
-            result?.country?.names?.en ?? null;
-        //continent
-        const continent=result?.continent.names?.en ?? null
-        // Get state/region
-        const state =
-            result?.subdivisions?.[0]?.names?.en ?? null;
+  const state = req.headers['x-vercel-ip-country-region']
+    ? decodeURIComponent(req.headers['x-vercel-ip-country-region'])
+    : null;
 
-        // Get city
-        const city =
-            result?.city?.names?.en ?? null;
+  const city = req.headers['x-vercel-ip-city']
+    ? decodeURIComponent(req.headers['x-vercel-ip-city'])
+    : null;
 
-        // Create readable location
-        let location;
+  const continent = req.headers['x-vercel-ip-continent']
+    ? decodeURIComponent(req.headers['x-vercel-ip-continent'])
+    : null;
 
-        if (city) {
-            location = state
-                ? `${city}, ${state} ,${country}`
-                : `${city}, ${country}, ${country}`;
-        } else if (state) {
-            location = country
-                ? `${state}, ${country}`
-                : state;
-        } else if (country) {
-            location = country;
-        } 
-        else {
-            location = "Unknown";
-        }
+  // 2. Format human-readable location string using your existing logic
+  let location;
 
-        const ipDetails=({ip,country,state,city,continent,location});
+  if (city) {
+    location = state
+      ? `${city}, ${state}, ${country || ''}`.replace(/,\s*$/, '')
+      : `${city}, ${country || ''}`.replace(/,\s*$/, '');
+  } else if (state) {
+    location = country
+      ? `${state}, ${country}`
+      : state;
+  } else if (country) {
+    location = country;
+  } else {
+    location = "Unknown";
+  }
+
+  // 3. Assemble response payload
+  const ipDetails = {
+    ip,
+    country: country ?? 'NG',
+    state: state ?? 'Lagos',
+    city: city ?? 'Lagos',
+    continent: continent ?? 'AF',
+    location
+  };
 
 
    const sql=`SELECT * FROM links  WHERE short=?`;
