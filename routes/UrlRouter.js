@@ -26,7 +26,7 @@ router.post("/postClip",async (req,res)=>{
 const clip =data.clip;
     const vsl=isValidURL(clip)
     if (vsl) {
-        const userId=data['userId']==0?nanoid(4):data['userId']
+        const userId=data['userId'];
         const slug="_"+nanoid(5)
         const url=new URL(clip);
         const original=url.href
