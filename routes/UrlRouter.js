@@ -32,8 +32,8 @@ const clip =data.clip;
         const original=url.href
         const hostName=url.hostname;
        // const shortURL=`https://zyler.com.ng/${slug}`;
-        //const shortURL=`http://localhost:3000/${slug}`
-        const shortURL=`https://frontend-url-blush.vercel.app/${slug}`
+        const shortURL=`http://localhost:3000/${slug}`
+        //const shortURL=`https://frontend-url-blush.vercel.app/${slug}`
       const result=await db.query(`INSERT INTO links(userId,short,original,clicks) VALUES(?,?,?,?)`,[userId,slug,original,0])
         console.log(result)
          return res.status(200).json({shortURL})
@@ -60,65 +60,19 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
+    const ip=req.ip
 
-    // 1. Get the actual client IP behind Vercel's proxy
-  const xForwardedFor = req.headers['x-forwarded-for'];
-  let clientIp = xForwardedFor
-    ? xForwardedFor.split(',')[0].trim()
-    : req.socket.remoteAddress?.replace(/^::ffff:/, '') || '';
+ const iop = await fetch(`https://ipwho.is/${ip}`);
+const data = await iop.json();
 
-  // 2. Extract Vercel native headers
-  let country = req.headers['x-vercel-ip-country']
-    ? decodeURIComponent(req.headers['x-vercel-ip-country'])
-    : null;
+const city=data.city?data.city:'Not Found';
+const country=data.country?data.country:'Not Found';
+const region=data.region?data.region:'Not Found';
+const continent=data.continent?data.continent:'Not Found';
 
-  let state = req.headers['x-vercel-ip-country-region']
-    ? decodeURIComponent(req.headers['x-vercel-ip-country-region'])
-    : null;
+const deviceLocation={city,country,region,continent}
 
-  let city = req.headers['x-vercel-ip-city']
-    ? decodeURIComponent(req.headers['x-vercel-ip-city'])
-    : null;
-
-  let continent = req.headers['x-vercel-ip-continent']
-    ? decodeURIComponent(req.headers['x-vercel-ip-continent'])
-    : null;
-
-  // 3. Fallback: If Vercel returns US or is missing country, query an HTTPS IP API
-  if (!country || country === 'US' || clientIp === '127.0.0.1' || clientIp === '::1') {
-    try {
-      // Use https://ipwhois.app/json/ or https://ipapi.co/json/
-      const endpoint = (clientIp && clientIp !== '127.0.0.1' && clientIp !== '::1')
-        ? `https://ipwhois.app/json/${clientIp}`
-        : `https://ipwhois.app/json/`;
-
-      const response = await fetch(endpoint);
-      const data = await response.json();
-
-      if (data && data.success !== false) {
-        clientIp = data.ip || clientIp;
-        country = data.country_code || data.country;
-        state = data.region;
-        city = data.city;
-        continent = data.continent_code;
-      }
-    } catch (err) {
-      console.error('External HTTPS IP lookup error:', err);
-    }
-  }
-
-  // 4. Format location string
-  let location;
-  if (city) {
-    location = state ? `${city}, ${state}, ${country}` : `${city}, ${country}`;
-  } else if (state) {
-    location = `${state}, ${country}`;
-  } else if (country) {
-    location = country;
-  } else {
-    location = "Unknown";
-  }
-
+console.log(deviceLocation)
 
    const sql=`SELECT * FROM links  WHERE short=?`;
        try {
@@ -134,12 +88,12 @@ router.get("/getClip",async(req,res)=>{
         
          //add details to location table
          const add_location="INSERT INTO linkpropeties(city,userId,linkId,continent,state,country,device,browser,os)VALUE(?,?,?,?,?,?,?,?,?)";
-         await db.query(add_location,[city,userId,linkId,continent,state,country,deviceProp['device'],deviceProp['browser'],deviceProp['os']]);
+         await db.query(add_location,[city,userId,linkId,continent,region,country,deviceProp['device'],deviceProp['browser'],deviceProp['os']]);
              return res.status(200).json({url})
        } catch (error) {
         console.log(error)
           return res.status(402).json({error:"No Link Was Found For This Clip"})
-       }  
+       }   
 })
 
 export default router;
