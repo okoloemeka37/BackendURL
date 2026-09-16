@@ -16,7 +16,7 @@ app.set("trust proxy", true);
 })) */
 
 app.use(cors({
-  origin:"https://frontend-url-blush.vercel.app/",
+  origin:"https://frontend-url-blush.vercel.app",
   credentials:true
 }))
  
