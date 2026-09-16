@@ -60,13 +60,14 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
-// 1. Extract the actual client IP (Vercel sets the true user IP as the first IP in x-forwarded-for)
+
+    // 1. Get the actual client IP behind Vercel's proxy
   const xForwardedFor = req.headers['x-forwarded-for'];
-  const clientIp = xForwardedFor
+  let clientIp = xForwardedFor
     ? xForwardedFor.split(',')[0].trim()
     : req.socket.remoteAddress?.replace(/^::ffff:/, '') || '';
 
-  // 2. Read Vercel's edge geolocation headers
+  // 2. Extract Vercel native headers
   let country = req.headers['x-vercel-ip-country']
     ? decodeURIComponent(req.headers['x-vercel-ip-country'])
     : null;
@@ -83,23 +84,26 @@ router.get("/getClip",async(req,res)=>{
     ? decodeURIComponent(req.headers['x-vercel-ip-continent'])
     : null;
 
-  // 3. Fallback: If Vercel detects 'US' incorrectly or headers are missing, query IP-API directly using the client's IP
+  // 3. Fallback: If Vercel returns US or is missing country, query an HTTPS IP API
   if (!country || country === 'US' || clientIp === '127.0.0.1' || clientIp === '::1') {
     try {
-      // Pass clientIp explicitly so the API locates the user, not the Vercel D.C. server
-      const targetIp = (clientIp === '127.0.0.1' || clientIp === '::1') ? '' : clientIp;
-      
-      const geoResponse = await fetch(`http://ip-api.com/json/${targetIp}`);
-      const geoData = await geoResponse.json();
+      // Use https://ipwhois.app/json/ or https://ipapi.co/json/
+      const endpoint = (clientIp && clientIp !== '127.0.0.1' && clientIp !== '::1')
+        ? `https://ipwhois.app/json/${clientIp}`
+        : `https://ipwhois.app/json/`;
 
-      if (geoData.status === 'success') {
-        country = geoData.countryCode || geoData.country;
-        state = geoData.regionName;
-        city = geoData.city;
-        continent = geoData.timezone ? geoData.timezone.split('/')[0] : continent;
+      const response = await fetch(endpoint);
+      const data = await response.json();
+
+      if (data && data.success !== false) {
+        clientIp = data.ip || clientIp;
+        country = data.country_code || data.country;
+        state = data.region;
+        city = data.city;
+        continent = data.continent_code;
       }
     } catch (err) {
-      console.error('External Geo IP fallback failed:', err);
+      console.error('External HTTPS IP lookup error:', err);
     }
   }
 
