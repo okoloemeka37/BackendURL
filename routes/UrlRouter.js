@@ -3,7 +3,8 @@ import {nanoid} from 'nanoid';
 import db from "../database/db.js"
 import maxmind from "maxmind";
 import {UAParser} from "ua-parser-js";
-import { fileURLToPath } from "url";
+import path from "path";
+
 const router=express.Router()
 
 
@@ -40,15 +41,11 @@ const clip =data.clip;
     } 
 
 })
-import path from "path";
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const dbPath = path.join(__dirname, "data","GeoLite2-City.mmdb");
+const dbPath = path.join(process.cwd(), 'data', 'GeoLite2-City.mmdb');
 
 const geoDb = await maxmind.open(dbPath);
+
 
 router.get("/getClip",async(req,res)=>{
      const {slug} =req.query;
