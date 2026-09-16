@@ -43,9 +43,6 @@ const clip =data.clip;
 
 })
 
-const dbPath = path.join(process.cwd(), 'data', 'GeoLite2-City.mmdb');
-
-const geoDb = await maxmind.open(dbPath);
 
 
 router.get("/getClip",async(req,res)=>{
@@ -61,6 +58,7 @@ router.get("/getClip",async(req,res)=>{
         os: Agentresult.os.name
     }
     const ip=req.ip
+    console.log(ip)
 
  const iop = await fetch(`https://ipwho.is/${ip}`);
 const data = await iop.json();
