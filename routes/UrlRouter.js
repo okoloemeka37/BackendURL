@@ -50,7 +50,7 @@ const geoDb = await maxmind.open(dbPath);
 
 router.get("/getClip",async(req,res)=>{
      const {slug} =req.query;
-    const ip='24.114.254.229';
+    const ip=req.ip//'24.114.254.229';
     const parser = new UAParser(req.headers["user-agent"]);
 
     const Agentresult = parser.getResult();
