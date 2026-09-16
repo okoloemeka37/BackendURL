@@ -60,53 +60,60 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
-// Extract client IP address safely behind Vercel's proxy
-  const rawIp = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '';
-  const ip = rawIp.replace(/^::ffff:/, ''); // Clean IPv6-mapped IPv4 addresses
+// 1. Extract the actual client IP (Vercel sets the true user IP as the first IP in x-forwarded-for)
+  const xForwardedFor = req.headers['x-forwarded-for'];
+  const clientIp = xForwardedFor
+    ? xForwardedFor.split(',')[0].trim()
+    : req.socket.remoteAddress?.replace(/^::ffff:/, '') || '';
 
-  // 1. Get raw location values from Vercel headers (decode URI components for multi-word cities)
-  const country = req.headers['x-vercel-ip-country']
+  // 2. Read Vercel's edge geolocation headers
+  let country = req.headers['x-vercel-ip-country']
     ? decodeURIComponent(req.headers['x-vercel-ip-country'])
     : null;
 
-  const state = req.headers['x-vercel-ip-country-region']
+  let state = req.headers['x-vercel-ip-country-region']
     ? decodeURIComponent(req.headers['x-vercel-ip-country-region'])
     : null;
 
-  const city = req.headers['x-vercel-ip-city']
+  let city = req.headers['x-vercel-ip-city']
     ? decodeURIComponent(req.headers['x-vercel-ip-city'])
     : null;
 
-  const continent = req.headers['x-vercel-ip-continent']
+  let continent = req.headers['x-vercel-ip-continent']
     ? decodeURIComponent(req.headers['x-vercel-ip-continent'])
     : null;
 
-  // 2. Format human-readable location string using your existing logic
-  let location;
+  // 3. Fallback: If Vercel detects 'US' incorrectly or headers are missing, query IP-API directly using the client's IP
+  if (!country || country === 'US' || clientIp === '127.0.0.1' || clientIp === '::1') {
+    try {
+      // Pass clientIp explicitly so the API locates the user, not the Vercel D.C. server
+      const targetIp = (clientIp === '127.0.0.1' || clientIp === '::1') ? '' : clientIp;
+      
+      const geoResponse = await fetch(`http://ip-api.com/json/${targetIp}`);
+      const geoData = await geoResponse.json();
 
+      if (geoData.status === 'success') {
+        country = geoData.countryCode || geoData.country;
+        state = geoData.regionName;
+        city = geoData.city;
+        continent = geoData.timezone ? geoData.timezone.split('/')[0] : continent;
+      }
+    } catch (err) {
+      console.error('External Geo IP fallback failed:', err);
+    }
+  }
+
+  // 4. Format location string
+  let location;
   if (city) {
-    location = state
-      ? `${city}, ${state}, ${country || ''}`.replace(/,\s*$/, '')
-      : `${city}, ${country || ''}`.replace(/,\s*$/, '');
+    location = state ? `${city}, ${state}, ${country}` : `${city}, ${country}`;
   } else if (state) {
-    location = country
-      ? `${state}, ${country}`
-      : state;
+    location = `${state}, ${country}`;
   } else if (country) {
     location = country;
   } else {
     location = "Unknown";
   }
-
-  // 3. Assemble response payload
-  const ipDetails = {
-    ip,
-    country: country ?? 'NG',
-    state: state ?? 'Lagos',
-    city: city ?? 'Lagos',
-    continent: continent ?? 'AF',
-    location
-  };
 
 
    const sql=`SELECT * FROM links  WHERE short=?`;
