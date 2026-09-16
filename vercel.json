@@ -14,7 +14,7 @@
   ],
   "functions": {
     "index.js": {
-      "includeFiles": ["data/GeoLite2-City.mmdb"]
+      "includeFiles": "data/GeoLite2-City.mmdb"
     }
   }
 }
