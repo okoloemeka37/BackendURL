@@ -25,9 +25,10 @@ router.post("/linkDetails",AuthMiddleware,async(req,res)=>{
     console.log(id)
     //get links beloging to user
   try {
+     //   device, os, COUNT(*) AS OsCount FROM linkpropeties WHERE linkId = ?GROUP BY device, os
        const [query]=await db.query("SELECT * FROM links WHERE id= ? LIMIT 1",[id]);
-      const [device]=await db.query("SELECT device,os,COUNT(os) AS OsCount FROM linkpropeties WHERE linkId= ? GROUP BY os",[id]);
- const [location]=await db.query("SELECT country,state,city,COUNT(city) AS CityCount FROM linkpropeties WHERE linkId= ? GROUP BY city",[id]);
+      const [device]=await db.query("SELECT device,os,COUNT(*) AS OsCount FROM linkpropeties WHERE linkId= ? GROUP BY device,os",[id]);
+ const [location]=await db.query("SELECT country,state,city,COUNT(*) AS CityCount FROM linkpropeties WHERE linkId= ? GROUP BY country,state,city",[id]);
 
        //const totalClicks=query.map((e)=>{return e['clicks']}).reduce((a,c)=>{return a+c},0)
         
