@@ -65,7 +65,7 @@ router.get("/getClip",async(req,res)=>{
 /*  const country = request.headers.get("x-vercel-ip-country");
 const state = request.headers.get("x-vercel-ip-country-region");
 const city = request.headers.get("x-vercel-ip-city"); */
-const data = await iop.json();
+
 
  const country = request.headers.get("x-vercel-ip-country");
 const region = request.headers.get("x-vercel-ip-country-region");
