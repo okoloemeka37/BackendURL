@@ -57,16 +57,20 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
-    const ip=req.ip
+    const ip=req.ip//'85.204.118.204'
     console.log(ip)
 
- const iop = await fetch(`https://ipwho.is/${ip}`);
+ /* const iop = await fetch(`https://ipwho.is/${ip}`); */
+
+/*  const country = request.headers.get("x-vercel-ip-country");
+const state = request.headers.get("x-vercel-ip-country-region");
+const city = request.headers.get("x-vercel-ip-city"); */
 const data = await iop.json();
 
-const city=data.city?data.city:'Not Found';
-const country=data.country?data.country:'Not Found';
-const region=data.region?data.region:'Not Found';
-const continent=data.continent?data.continent:'Not Found';
+ const country = request.headers.get("x-vercel-ip-country");
+const region = request.headers.get("x-vercel-ip-country-region");
+const city = request.headers.get("x-vercel-ip-city");
+const continent='Not Found';
 
 const deviceLocation={city,country,region,continent}
 
