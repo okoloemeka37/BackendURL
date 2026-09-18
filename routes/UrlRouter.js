@@ -66,14 +66,15 @@ router.get("/getClip",async(req,res)=>{
 const state = req.headers.get("x-vercel-ip-country-region");
 const city = req.headers.get("x-vercel-ip-city"); */
 
-
- const country = req.headers.get("x-vercel-ip-country");
-const region = req.headers.get("x-vercel-ip-country-region");
-const city = req.headers.get("x-vercel-ip-city");
-const continent='Not Found';
+ console.log({
+        forwardedFor: req.headers["x-forwarded-for"],
+        realIp: req.headers["x-real-ip"],
+        vercelForwardedFor: req.headers["x-vercel-forwarded-for"],
+        socketIp: req.socket.remoteAddress,
+    });
 
 const deviceLocation={city,country,region,continent}
-
+/* 
 console.log(deviceLocation)
 
    const sql=`SELECT * FROM links  WHERE short=?`;
@@ -95,7 +96,7 @@ console.log(deviceLocation)
        } catch (error) {
         console.log(error)
           return res.status(402).json({error:"No Link Was Found For This Clip"})
-       }   
+       }   */
 })
-
+ 
 export default router;
