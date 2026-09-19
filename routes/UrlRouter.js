@@ -45,7 +45,7 @@ const clip =data.clip;
 
 
 
-router.get("/getClip",async(req,res)=>{
+router.post("/getClip",async(req,res)=>{
      const {slug} =req.query;
 
     const parser = new UAParser(req.headers["user-agent"]);
