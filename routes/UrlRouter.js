@@ -31,8 +31,8 @@ const clip =data.clip;
         const url=new URL(clip);
         const original=url.href
         const hostName=url.hostname;
-       // const shortURL=`https://zyler.com.ng/${slug}`;
-        const shortURL=`http://localhost:3000/${slug}`
+       const shortURL=`https://zyler.com.ng/${slug}`;
+        //const shortURL=`http://localhost:3000/${slug}`
         //const shortURL=`https://frontend-url-blush.vercel.app/${slug}`
       const result=await db.query(`INSERT INTO links(userId,short,original,clicks) VALUES(?,?,?,?)`,[userId,slug,original,0])
         console.log(result)
