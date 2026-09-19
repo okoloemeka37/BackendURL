@@ -57,24 +57,11 @@ router.get("/getClip",async(req,res)=>{
         browser: Agentresult.browser.name,
         os: Agentresult.os.name
     }
-    const ip=req.ip//'85.204.118.204'
-    console.log(ip)
+    
+    const location=req.body
 
- /* const iop = await fetch(`https://ipwho.is/${ip}`); */
+const deviceLocation={ip:location['ip'],city:location['city'],country:location['country'],region:location['region'],continent:'AF'}
 
-/*  const country = req.headers.get("x-vercel-ip-country");
-const state = req.headers.get("x-vercel-ip-country-region");
-const city = req.headers.get("x-vercel-ip-city"); */
-
- console.log({
-        forwardedFor: req.headers["x-forwarded-for"],
-        realIp: req.headers["x-real-ip"],
-        vercelForwardedFor: req.headers["x-vercel-forwarded-for"],
-        socketIp: req.socket.remoteAddress,
-    });
-
-const deviceLocation={city,country,region,continent}
-/* 
 console.log(deviceLocation)
 
    const sql=`SELECT * FROM links  WHERE short=?`;
@@ -90,13 +77,13 @@ console.log(deviceLocation)
          await db.query(update,[click_Count,slug])
         
          //add details to location table
-         const add_location="INSERT INTO linkpropeties(city,userId,linkId,continent,state,country,device,browser,os)VALUE(?,?,?,?,?,?,?,?,?)";
-         await db.query(add_location,[city,userId,linkId,continent,region,country,deviceProp['device'],deviceProp['browser'],deviceProp['os']]);
+         const add_location="INSERT INTO linkpropeties(ip,city,userId,linkId,continent,state,country,device,browser,os)VALUE(?,?,?,?,?,?,?,?,?)";
+         await db.query(add_location,[deviceLocation['ip'],deviceLocation['city'],userId,linkId,deviceLocation['continent'],deviceLocation['region'],deviceLocation['country'],deviceProp['device'],deviceProp['browser'],deviceProp['os']]);
              return res.status(200).json({url})
        } catch (error) {
         console.log(error)
           return res.status(402).json({error:"No Link Was Found For This Clip"})
-       }   */
+       }   
 })
  
 export default router;

@@ -2,6 +2,7 @@ export const up = async (db) => {
    await db.query(`
     CREATE TABLE IF NOT EXISTS linkpropeties (
       id INT AUTO_INCREMENT PRIMARY KEY,
+      ip VARCHAR(255) NOT NULL,
       city VARCHAR(255) NOT NULL,
       country VARCHAR(255) NOT NULL,
       state VARCHAR(255) NOT NULL,
