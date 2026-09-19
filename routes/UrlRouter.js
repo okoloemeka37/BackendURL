@@ -60,6 +60,8 @@ router.post("/getClip",async(req,res)=>{
     
     const location=req.body
 
+    console.log(location)
+
 const deviceLocation={ip:location['ip'],city:location['city'],country:location['country'],region:location['region'],continent:'AF'}
 
 console.log(deviceLocation)
