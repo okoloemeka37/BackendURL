@@ -79,7 +79,7 @@ console.log(deviceLocation)
          await db.query(update,[click_Count,slug])
         
          //add details to location table
-         const add_location="INSERT INTO linkpropeties(ip,city,userId,linkId,continent,state,country,device,browser,os)VALUE(?,?,?,?,?,?,?,?,?)";
+         const add_location="INSERT INTO linkpropeties(ip,city,userId,linkId,continent,state,country,device,browser,os)VALUE(?,?,?,?,?,?,?,?,?,?)";
          await db.query(add_location,[deviceLocation['ip'],deviceLocation['city'],userId,linkId,deviceLocation['continent'],deviceLocation['region'],deviceLocation['country'],deviceProp['device'],deviceProp['browser'],deviceProp['os']]);
              return res.status(200).json({url})
        } catch (error) {
