@@ -13,18 +13,19 @@ app.set("trust proxy", true);
 /* app.use(cors({
     origin:"http://localhost:3000",
     credentials:true
-})) */
+})) 
 
 app.use(cors({
   origin:"https://frontend-url-blush.vercel.app",
   credentials:true
 }))
- 
+ */
+
 app.use(cookieParser())
-/* const allowedOrigins = [
+ const allowedOrigins = [
   "https://zyler.com.ng",
   "https://www.zyler.com.ng",
-  "https://frontendurl-cwfx.onrender.com"
+  "https://frontend-url-blush.vercel.app"
 ];
 
 app.use(cors({
@@ -35,8 +36,8 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: false
-})); */
+  credentials: true
+})); 
  
 
 app.use("/api/user",UrlRouter)
