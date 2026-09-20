@@ -8,7 +8,7 @@ router.get("/Dashboard",AuthMiddleware,async(req,res)=>{
     const userId= req.userData.id;
     //get links beloging to user
  try {
-       const [query]=await db.query("SELECT * FROM links WHERE userId = ? LIMIT 10",[userId]);
+       const [query]=await db.query("SELECT * FROM links WHERE userId = ? ORDER BY id DESC LIMIT 10 ",[userId]);
 
        const totalClicks=query.map((e)=>{return e['clicks']}).reduce((a,c)=>{return a+c},0)
         
@@ -63,7 +63,7 @@ router.get("/Link",AuthMiddleware,async(req,res)=>{
     const userId= req.userData.id;
     //get links beloging to user
  try {
-       const [query]=await db.query("SELECT * FROM links WHERE userId = ?",[userId]);
+       const [query]=await db.query("SELECT * FROM links WHERE userId = ? ORDER BY id DESC",[userId]);
 
             return res.status(200).json({status:200,data:{links:query}})
  } catch (error) {
